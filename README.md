@@ -43,8 +43,22 @@ The Python-based tool uses [ImmoWeb](https://www.immoweb.be/en) website, the lea
 
 ## Usage
 
-- Execute the script by running the command `python main.py` in the terminal.
-- This will scrape the property information from [ImmoWeb](https://www.immoweb.be/en) and store it in `data` directory in both `json` and `csv` formats.
+The CLI now supports scraping immowelt.de and is structured to add more platforms later.
+
+Examples:
+
+```bash
+# Scrape listings from a search page template (multiple pages)
+python main.py immowelt --search-url "https://www.immowelt.de/liste/berlin/wohnungen/kaufen?d=true&p={page}" --pages 3
+
+# Scrape a single listing page
+python main.py immowelt --listing-url "https://www.immowelt.de/expose/EXAMPLE_ID"
+
+# Scrape multiple listing pages from a file
+python main.py immowelt --listing-urls-file data/listing_urls.txt
+```
+
+Outputs are written to `data/listings_immowelt.json` and `data/listings_immowelt.csv`.
 
 ## Timeline
 
