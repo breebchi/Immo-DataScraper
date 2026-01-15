@@ -60,6 +60,21 @@ def parse_args() -> argparse.Namespace:
         default=0.0,
         help="Delay in seconds between requests.",
     )
+    immowelt.add_argument(
+        "--retries",
+        type=int,
+        default=2,
+        help="Retry count for 403/429/503 or network errors.",
+    )
+    immowelt.add_argument(
+        "--cookie",
+        help="Optional Cookie header value for authenticated requests.",
+    )
+    immowelt.add_argument(
+        "--debug-html-dir",
+        type=Path,
+        help="Write raw HTML responses to this directory.",
+    )
 
     return parser.parse_args()
 
@@ -82,7 +97,14 @@ def main() -> None:
             if not args.search_url:
                 raise SystemExit("Provide --search-url or --listing-url to scrape.")
             search_urls = source.build_search_urls(args.search_url, args.pages)
-            listing_urls = collect_listing_urls(source, search_urls, session, delay_s=args.delay)
+            listing_urls = collect_listing_urls(
+                source,
+                search_urls,
+                session,
+                retries=args.retries,
+                cookie=args.cookie,
+                delay_s=args.delay,
+            )
 
         if args.max_listings > 0:
             listing_urls = listing_urls[: args.max_listings]
@@ -92,7 +114,10 @@ def main() -> None:
             listing_urls,
             session,
             max_workers=args.workers,
+            retries=args.retries,
+            cookie=args.cookie,
             delay_s=args.delay,
+            debug_html_dir=args.debug_html_dir,
         )
 
     output_dir = args.output_dir
